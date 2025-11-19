@@ -1,0 +1,77 @@
+Title: Detection of Inverted Repeats and Putative Transposons in Three Genomes
+
+Student: _________________________
+Course: Bioinformatics Laboratory
+Date: ____________________________
+
+1. Introduction
+Transposable elements (TEs) are mobile DNA sequences that can move within a genome.
+Many DNA transposons are flanked by short inverted repeats (IRs). In this project,
+three NCBI genomes were scanned for short inverted repeats of length 4–6 nucleotides
+without prior knowledge of their sequence. The goal was to identify possible
+transposon-like regions marked by these IR pairs.
+
+2. Data
+The following FASTA genome files were analysed:
+
+- C:\Users\Abd\Desktop\sdm\BioInformatics\lab8\acute.fasta (header: NC_045512.2 Severe acute respiratory syndrome coronavirus 2 isolate Wuhan-Hu-1, complete genome)
+- C:\Users\Abd\Desktop\sdm\BioInformatics\lab8\Boebeisivirus.fasta (header: NC_130177.1 Boebeisivirus manatense isolate ctMfu914, complete genome)
+- C:\Users\Abd\Desktop\sdm\BioInformatics\lab8\corona.fasta (header: NC_005831.2 Human Coronavirus NL63, complete genome)
+
+3. Methods
+Each genome was read from its FASTA file and all sequence lines were concatenated
+into a single uppercase DNA string. For each motif length k in {4, 5, 6}, all k-mers
+were indexed together with their positions. For each k-mer, its reverse complement
+was computed and all pairs where the reverse complement appeared later in the
+sequence were recorded as inverted repeat pairs. For each pair, the spacer length
+between the two copies was computed. Results were visualised using scatter plots
+of left IR start position vs spacer length.
+
+4. Results
+Summary statistics per genome are shown below:
+
+Genome: NC_045512.2 Severe acute respiratory syndrome coronavirus 2 isolate Wuhan-Hu-1, complete genome
+File path: C:\Users\Abd\Desktop\sdm\BioInformatics\lab8\acute.fasta
+Genome length: 29903 bp
+Total inverted repeat pairs (length 4-6): 3089437
+  Pairs with IR length 4: 2301261
+  Pairs with IR length 5: 620649
+  Pairs with IR length 6: 167527
+
+Genome: NC_130177.1 Boebeisivirus manatense isolate ctMfu914, complete genome
+File path: C:\Users\Abd\Desktop\sdm\BioInformatics\lab8\Boebeisivirus.fasta
+Genome length: 2083 bp
+Total inverted repeat pairs (length 4-6): 10895
+  Pairs with IR length 4: 8346
+  Pairs with IR length 5: 2049
+  Pairs with IR length 6: 500
+
+Genome: NC_005831.2 Human Coronavirus NL63, complete genome
+File path: C:\Users\Abd\Desktop\sdm\BioInformatics\lab8\corona.fasta
+Genome length: 27553 bp
+Total inverted repeat pairs (length 4-6): 2697859
+  Pairs with IR length 4: 2005938
+  Pairs with IR length 5: 544036
+  Pairs with IR length 6: 147885
+
+From the scatter plots, inverted repeats can be seen distributed along the whole
+length of each genome. Spacer lengths range from very small values (motifs almost
+adjacent) up to large values when the second copy is far away from the first.
+
+5. Discussion
+Short inverted repeats of length 4–6 nucleotides are expected to occur frequently
+by chance in long DNA sequences, so many of the detected pairs likely reflect the
+background sequence composition rather than true transposon boundaries. However,
+the method provides a useful first filter to highlight candidate regions for further
+analysis. Regions where two IRs delineate a larger internal segment are especially
+interesting as potential transposon-like elements.
+
+6. Conclusion
+A Python script was used to scan three genomes for short inverted repeats of length
+4–6 nucleotides, report all inverted repeat pairs, and visualise their distribution.
+The genomes contained many such pairs, widely distributed along their sequences.
+Further biological analyses (for example ORF prediction or protein domain search)
+would be needed to confirm which of these candidate regions correspond to real
+transposable elements.
+
+(End of report)

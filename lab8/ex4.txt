@@ -1,0 +1,77 @@
+## Summary of Results
+
+You analysed three genomes for inverted repeats (IRs) of length 4–6 bp and their reverse complements, treating each pair as a possible transposon-like structure.
+
+### 1. SARS-CoV-2 (acute.fasta)
+
+* **Genome header:**
+  `NC_045512.2 Severe acute respiratory syndrome coronavirus 2 isolate Wuhan-Hu-1, complete genome`
+* **Genome length:** 29,903 bp
+* **Total IR pairs (4–6 bp):** **3,089,437**
+
+**Observations:**
+
+* The output shows many repeated short motifs at the beginning of the genome, especially:
+
+  * `ATTA` / `TAAT` (4 bp)
+  * `ATTAA` / `TTAAT` (5 bp)
+  * `ATTAAA` / `TTTAAT` (6 bp)
+* These IR pairs are spread across large parts of the genome (right_start quickly goes into thousands of bp).
+* Spacer lengths range from ~125 bp to several thousand bp even in the first 50 pairs, showing that inverted repeats can delimit both short and long internal regions.
+
+---
+
+### 2. Boebeisivirus manatense (Boebeisivirus.fasta)
+
+* **Genome header:**
+  `NC_130177.1 Boebeisivirus manatense isolate ctMfu914, complete genome`
+* **Genome length:** 2,083 bp
+* **Total IR pairs (4–6 bp):** **10,895**
+
+**Observations:**
+
+* Compared to SARS-CoV-2, the genome is much shorter and therefore the absolute number of IR pairs is also much smaller.
+* Common motifs in the first 50 pairs include:
+
+  * `ATAA` / `TTAT`
+  * `TAAA` / `TTTA`
+  * `AAAA` / `TTTT`
+  * `AAAT` / `ATTT`
+  * `AATC` / `GATT`
+  * `ATCA` / `TGAT`
+* Many of these motifs are A/T-rich, which is typical in many viral genomes.
+* Even in this small genome, short IRs are abundant and appear at many different positions along the genome.
+
+---
+
+### 3. Human coronavirus NL63 (corona.fasta)
+
+* **Genome header:**
+  `NC_005831.2 Human Coronavirus NL63, complete genome`
+* **Genome length:** 27,553 bp
+* **Total IR pairs (4–6 bp):** **2,697,859**
+
+**Observations:**
+
+* This genome is similar in size to SARS-CoV-2 and also shows a very large number of short IR pairs.
+* The dominant motifs in the first 50 pairs are:
+
+  * `CTTA` / `TAAG` (4 bp)
+  * `CTTAA` / `TTAAG` (5 bp)
+  * `CTTAAA` / `TTTAAG` (6 bp)
+* As in the SARS-CoV-2 genome, these IRs are distributed throughout the genome, with right_start positions quickly increasing into the thousands of bp.
+* Spacer lengths vary widely, again indicating that some IR pairs are very close while others delimit long internal segments.
+
+---
+
+### General Interpretation
+
+* All three genomes contain **huge numbers of short inverted repeat pairs (4–6 bp)**.
+* The **larger genomes (SARS-CoV-2 and HCoV-NL63)** naturally have more IR pairs (on the order of 2–3 million pairs), while the **smaller Boebeisivirus genome** has fewer (about 10,000), but still a high density relative to its size.
+* The repeated motifs are often simple, A/T-rich sequences (e.g. `ATTA`, `ATAA`, `CTTA`, `AAAA`), which are statistically expected to occur many times in long sequences.
+* Because short motifs are so frequent, **many of these IR pairs are likely due to random sequence composition**, not necessarily true transposons.
+* However, the method successfully identifies:
+
+  * Where in the genome these IR pairs occur,
+  * How far apart the two repeats are (spacer length),
+    which provides a **first filter** for selecting longer IR-delimited regions as **candidate transposon-like elements** for further biological analysis.
