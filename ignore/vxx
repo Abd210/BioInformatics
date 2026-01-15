@@ -1,0 +1,143 @@
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { BookOpen, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+
+const duas = [
+  {
+    title: "Morning Supplication",
+    arabic: "أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ",
+    transliteration: "Asbahna wa asbahal mulku lillah, walhamdu lillah",
+    translation: "We have reached the morning and at this very time the whole kingdom belongs to Allah. All praise is due to Allah."
+  },
+  {
+    title: "Protection from Evil",
+    arabic: "بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ",
+    transliteration: "Bismillahil-ladhi la yadurru ma'asmihi shay'un fil-ardi wa la fis-sama'",
+    translation: "In the Name of Allah, with Whose Name nothing on earth or in heaven can cause harm."
+  },
+  {
+    title: "Seeking Forgiveness",
+    arabic: "أَسْتَغْفِرُ اللَّهَ الْعَظِيمَ الَّذِي لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ وَأَتُوبُ إِلَيْهِ",
+    transliteration: "Astaghfirullaha al-'Adheemal-ladhi la ilaha illa Huwal-Hayyul-Qayyum wa atubu ilayh",
+    translation: "I seek the forgiveness of Allah the Mighty, Whom there is none worthy of worship except Him, the Living, the Sustainer, and I repent unto Him."
+  },
+  {
+    title: "Before Sleeping",
+    arabic: "بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا",
+    transliteration: "Bismika Allahumma amutu wa ahya",
+    translation: "In Your name, O Allah, I die and I live."
+  },
+  {
+    title: "Entering the Home",
+    arabic: "اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَ الْمَوْلِجِ وَخَيْرَ الْمَخْرَجِ",
+    transliteration: "Allahumma inni as'aluka khayral-mawliji wa khayral-makhraji",
+    translation: "O Allah, I ask You for the good of entering and the good of leaving."
+  }
+];
+
+export default function DailyDuaCard() {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const nextDua = () => {
+    setCurrentIndex((prev) => (prev + 1) % duas.length);
+  };
+
+  const prevDua = () => {
+    setCurrentIndex((prev) => (prev - 1 + duas.length) % duas.length);
+  };
+
+  const currentDua = duas[currentIndex];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.3 }}
+      className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-3xl shadow-xl shadow-amber-100/50 p-6 md:p-8 relative overflow-hidden"
+    >
+      {/* Decorative pattern */}
+      <div className="absolute top-0 right-0 w-32 h-32 opacity-10">
+        <svg viewBox="0 0 100 100" className="w-full h-full text-amber-600">
+          <pattern id="dua-pattern" x="0" y="0" width="25" height="25" patternUnits="userSpaceOnUse">
+            <path d="M12.5 0 L25 12.5 L12.5 25 L0 12.5 Z" fill="none" stroke="currentColor" strokeWidth="1"/>
+          </pattern>
+          <rect width="100%" height="100%" fill="url(#dua-pattern)"/>
+        </svg>
+      </div>
+
+      <div className="relative z-10">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center">
+              <Sparkles className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-slate-800">Daily Dua</h3>
+              <p className="text-sm text-amber-700/70">{currentIndex + 1} of {duas.length}</p>
+            </div>
+          </div>
+        </div>
+
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentIndex}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.2 }}
+            className="space-y-4"
+          >
+            <h4 className="text-amber-800 font-medium">{currentDua.title}</h4>
+            
+            <p className="text-2xl md:text-3xl text-right font-arabic leading-loose text-slate-800">
+              {currentDua.arabic}
+            </p>
+            
+            <p className="text-amber-700 italic text-sm">
+              {currentDua.transliteration}
+            </p>
+            
+            <p className="text-slate-600 text-sm leading-relaxed">
+              {currentDua.translation}
+            </p>
+          </motion.div>
+        </AnimatePresence>
+
+        <div className="flex items-center justify-between mt-8">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={prevDua}
+            className="w-10 h-10 rounded-xl hover:bg-amber-100"
+          >
+            <ChevronLeft className="w-5 h-5 text-amber-700" />
+          </Button>
+
+          <div className="flex gap-1.5">
+            {duas.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => setCurrentIndex(idx)}
+                className={`w-2 h-2 rounded-full transition-all ${
+                  idx === currentIndex 
+                    ? 'w-6 bg-amber-500' 
+                    : 'bg-amber-300 hover:bg-amber-400'
+                }`}
+              />
+            ))}
+          </div>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={nextDua}
+            className="w-10 h-10 rounded-xl hover:bg-amber-100"
+          >
+            <ChevronRight className="w-5 h-5 text-amber-700" />
+          </Button>
+        </div>
+      </div>
+    </motion.div>
+  );
+}

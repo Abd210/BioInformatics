@@ -1,0 +1,93 @@
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { Clock } from 'lucide-react';
+
+export default function NextPrayerBanner({ nextPrayer, nextPrayerTime }) {
+  const [countdown, setCountdown] = useState('');
+
+  useEffect(() => {
+    const updateCountdown = () => {
+      if (!nextPrayerTime) return;
+      
+      const now = new Date();
+      const [hours, minutes] = nextPrayerTime.split(':').map(Number);
+      const prayerDate = new Date();
+      prayerDate.setHours(hours, minutes, 0, 0);
+      
+      if (prayerDate < now) {
+        prayerDate.setDate(prayerDate.getDate() + 1);
+      }
+      
+      const diff = prayerDate - now;
+      const h = Math.floor(diff / (1000 * 60 * 60));
+      const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const s = Math.floor((diff % (1000 * 60)) / 1000);
+      
+      setCountdown(`${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`);
+    };
+
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
+    return () => clearInterval(interval);
+  }, [nextPrayerTime]);
+
+  const prayerNames = {
+    fajr: 'Fajr',
+    dhuhr: 'Dhuhr',
+    asr: 'Asr',
+    maghrib: 'Maghrib',
+    isha: 'Isha'
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-800 via-emerald-900 to-teal-950 p-6 md:p-8 text-white shadow-2xl"
+    >
+      {/* Decorative Islamic Pattern */}
+      <div className="absolute inset-0 opacity-5">
+        <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+          <pattern id="islamic-pattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+            <circle cx="10" cy="10" r="8" fill="none" stroke="currentColor" strokeWidth="0.5"/>
+            <circle cx="10" cy="10" r="4" fill="none" stroke="currentColor" strokeWidth="0.5"/>
+            <path d="M10 2 L10 18 M2 10 L18 10" stroke="currentColor" strokeWidth="0.3"/>
+          </pattern>
+          <rect width="100%" height="100%" fill="url(#islamic-pattern)"/>
+        </svg>
+      </div>
+      
+      <div className="relative z-10">
+        <div className="flex items-center gap-2 text-emerald-300/80 text-sm font-medium mb-2">
+          <Clock className="w-4 h-4" />
+          <span>Next Prayer</span>
+        </div>
+        
+        <h2 className="text-3xl md:text-4xl font-bold mb-1">
+          {prayerNames[nextPrayer] || 'Loading...'}
+        </h2>
+        
+        <p className="text-emerald-200/70 text-lg mb-6">
+          at {nextPrayerTime || '--:--'}
+        </p>
+        
+        <div className="flex items-baseline gap-1">
+          <span className="text-emerald-300/60 text-sm uppercase tracking-wider">Time remaining</span>
+        </div>
+        <div className="text-4xl md:text-5xl font-light tracking-wider font-mono">
+          {countdown || '--:--:--'}
+        </div>
+      </div>
+      
+      {/* Decorative Crescent */}
+      <div className="absolute -right-8 -bottom-8 w-32 h-32 opacity-10">
+        <svg viewBox="0 0 100 100" className="w-full h-full">
+          <path
+            d="M50 10 A40 40 0 1 1 50 90 A30 30 0 1 0 50 10"
+            fill="currentColor"
+          />
+        </svg>
+      </div>
+    </motion.div>
+  );
+}

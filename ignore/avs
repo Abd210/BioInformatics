@@ -1,0 +1,36 @@
+{
+  "name": "PrayerLog",
+  "type": "object",
+  "properties": {
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "The date of the prayer"
+    },
+    "prayer_name": {
+      "type": "string",
+      "enum": [
+        "fajr",
+        "dhuhr",
+        "asr",
+        "maghrib",
+        "isha"
+      ],
+      "description": "Name of the prayer"
+    },
+    "completed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the prayer was completed"
+    },
+    "completed_on_time": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the prayer was completed on time"
+    }
+  },
+  "required": [
+    "date",
+    "prayer_name"
+  ]
+}

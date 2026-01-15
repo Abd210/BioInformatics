@@ -1,0 +1,167 @@
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { Compass, MapPin, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+
+export default function QiblaCompass() {
+  const [qiblaDirection, setQiblaDirection] = useState(null);
+  const [deviceHeading, setDeviceHeading] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [permissionGranted, setPermissionGranted] = useState(false);
+
+  // Kaaba coordinates
+  const KAABA_LAT = 21.4225;
+  const KAABA_LNG = 39.8262;
+
+  const calculateQibla = (lat, lng) => {
+    const latRad = (lat * Math.PI) / 180;
+    const lngRad = (lng * Math.PI) / 180;
+    const kaabaLatRad = (KAABA_LAT * Math.PI) / 180;
+    const kaabaLngRad = (KAABA_LNG * Math.PI) / 180;
+
+    const y = Math.sin(kaabaLngRad - lngRad);
+    const x = Math.cos(latRad) * Math.tan(kaabaLatRad) - 
+              Math.sin(latRad) * Math.cos(kaabaLngRad - lngRad);
+    
+    let qibla = (Math.atan2(y, x) * 180) / Math.PI;
+    qibla = (qibla + 360) % 360;
+    
+    return qibla;
+  };
+
+  const getLocation = () => {
+    setLoading(true);
+    setError(null);
+
+    if (!navigator.geolocation) {
+      setError('Geolocation is not supported');
+      setLoading(false);
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const qibla = calculateQibla(position.coords.latitude, position.coords.longitude);
+        setQiblaDirection(qibla);
+        setPermissionGranted(true);
+        setLoading(false);
+      },
+      (err) => {
+        setError('Unable to get location. Please enable location services.');
+        setLoading(false);
+      }
+    );
+  };
+
+  useEffect(() => {
+    // Try to get compass heading
+    const handleOrientation = (event) => {
+      if (event.webkitCompassHeading) {
+        setDeviceHeading(event.webkitCompassHeading);
+      } else if (event.alpha) {
+        setDeviceHeading(360 - event.alpha);
+      }
+    };
+
+    if (window.DeviceOrientationEvent) {
+      window.addEventListener('deviceorientation', handleOrientation, true);
+    }
+
+    return () => {
+      window.removeEventListener('deviceorientation', handleOrientation, true);
+    };
+  }, []);
+
+  const rotation = qiblaDirection !== null ? qiblaDirection - deviceHeading : 0;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.2 }}
+      className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 p-6 md:p-8"
+    >
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h3 className="text-lg font-semibold text-slate-800">Qibla Direction</h3>
+          <p className="text-sm text-slate-500">Face towards Mecca</p>
+        </div>
+        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
+          <Compass className="w-5 h-5 text-white" />
+        </div>
+      </div>
+
+      <div className="flex flex-col items-center">
+        {!permissionGranted ? (
+          <div className="text-center py-8">
+            <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-slate-100 flex items-center justify-center">
+              <MapPin className="w-10 h-10 text-slate-400" />
+            </div>
+            <p className="text-slate-600 mb-4">Enable location to find Qibla direction</p>
+            <Button 
+              onClick={getLocation} 
+              disabled={loading}
+              className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700"
+            >
+              {loading ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <MapPin className="w-4 h-4 mr-2" />
+              )}
+              Find Qibla
+            </Button>
+            {error && <p className="text-red-500 text-sm mt-3">{error}</p>}
+          </div>
+        ) : (
+          <div className="relative w-48 h-48 md:w-64 md:h-64">
+            {/* Outer ring */}
+            <div className="absolute inset-0 rounded-full border-4 border-slate-200" />
+            
+            {/* Degree markers */}
+            <div className="absolute inset-2 rounded-full border border-slate-100" />
+            
+            {/* Cardinal directions */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="absolute top-2 text-sm font-semibold text-slate-400">N</span>
+              <span className="absolute bottom-2 text-sm font-semibold text-slate-400">S</span>
+              <span className="absolute left-2 text-sm font-semibold text-slate-400">W</span>
+              <span className="absolute right-2 text-sm font-semibold text-slate-400">E</span>
+            </div>
+
+            {/* Compass needle pointing to Qibla */}
+            <motion.div
+              className="absolute inset-0 flex items-center justify-center"
+              style={{ rotate: rotation }}
+              animate={{ rotate: rotation }}
+              transition={{ type: 'spring', stiffness: 50, damping: 10 }}
+            >
+              <div className="relative w-full h-full flex items-center justify-center">
+                {/* Kaaba icon at the tip */}
+                <div className="absolute top-4 w-8 h-8 bg-gradient-to-br from-amber-500 to-amber-600 rounded-lg flex items-center justify-center shadow-lg">
+                  <span className="text-white text-xs font-bold">🕋</span>
+                </div>
+                {/* Needle line */}
+                <div className="absolute top-12 bottom-1/2 w-1 bg-gradient-to-b from-emerald-500 to-emerald-600 rounded-full" />
+                {/* Center dot */}
+                <div className="w-4 h-4 rounded-full bg-emerald-600 shadow-lg z-10" />
+              </div>
+            </motion.div>
+
+            {/* Inner decorative ring */}
+            <div className="absolute inset-8 rounded-full border border-dashed border-slate-200" />
+          </div>
+        )}
+
+        {permissionGranted && qiblaDirection !== null && (
+          <div className="mt-6 text-center">
+            <p className="text-3xl font-light text-slate-800">
+              {Math.round(qiblaDirection)}°
+            </p>
+            <p className="text-sm text-slate-500 mt-1">from North</p>
+          </div>
+        )}
+      </div>
+    </motion.div>
+  );
+}

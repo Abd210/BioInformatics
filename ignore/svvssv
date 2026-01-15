@@ -1,0 +1,112 @@
+import React from 'react';
+import { motion } from 'framer-motion';
+import { Calendar, Moon } from 'lucide-react';
+
+export default function IslamicDateCard() {
+  const getHijriDate = () => {
+    const today = new Date();
+    
+    // Islamic month names
+    const islamicMonths = [
+      'Muharram', 'Safar', 'Rabi al-Awwal', 'Rabi al-Thani',
+      'Jumada al-Awwal', 'Jumada al-Thani', 'Rajab', 'Shaban',
+      'Ramadan', 'Shawwal', 'Dhul Qadah', 'Dhul Hijjah'
+    ];
+
+    // Approximate Hijri date calculation
+    const gregorianDate = today.getTime();
+    const hijriEpoch = new Date(622, 6, 16).getTime();
+    const daysSinceHijri = Math.floor((gregorianDate - hijriEpoch) / (1000 * 60 * 60 * 24));
+    const lunarMonthLength = 29.530588853;
+    const lunarYearLength = lunarMonthLength * 12;
+    
+    const hijriYear = Math.floor(daysSinceHijri / lunarYearLength) + 1;
+    const daysInCurrentYear = daysSinceHijri % lunarYearLength;
+    const hijriMonth = Math.floor(daysInCurrentYear / lunarMonthLength);
+    const hijriDay = Math.floor(daysInCurrentYear % lunarMonthLength) + 1;
+
+    return {
+      day: hijriDay,
+      month: islamicMonths[hijriMonth] || islamicMonths[0],
+      year: hijriYear,
+      monthIndex: hijriMonth
+    };
+  };
+
+  const hijriDate = getHijriDate();
+  const gregorianDate = new Date().toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.15 }}
+      className="bg-gradient-to-br from-indigo-900 via-purple-900 to-slate-900 rounded-3xl p-6 text-white relative overflow-hidden"
+    >
+      {/* Stars decoration */}
+      <div className="absolute inset-0 overflow-hidden">
+        {[...Array(20)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-1 h-1 bg-white rounded-full opacity-30"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animation: `twinkle ${2 + Math.random() * 3}s infinite`
+            }}
+          />
+        ))}
+      </div>
+
+      <style>{`
+        @keyframes twinkle {
+          0%, 100% { opacity: 0.3; }
+          50% { opacity: 0.8; }
+        }
+      `}</style>
+
+      <div className="relative z-10">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 rounded-xl bg-white/10 backdrop-blur flex items-center justify-center">
+            <Moon className="w-5 h-5 text-purple-300" />
+          </div>
+          <span className="text-purple-300/80 text-sm font-medium">Islamic Calendar</span>
+        </div>
+
+        <div className="space-y-1">
+          <div className="text-4xl font-bold">
+            {hijriDate.day}
+          </div>
+          <div className="text-xl text-purple-200">
+            {hijriDate.month}
+          </div>
+          <div className="text-purple-300/70">
+            {hijriDate.year} AH
+          </div>
+        </div>
+
+        <div className="mt-4 pt-4 border-t border-white/10">
+          <div className="flex items-center gap-2 text-purple-300/60 text-sm">
+            <Calendar className="w-4 h-4" />
+            <span>{gregorianDate}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Crescent moon decoration */}
+      <div className="absolute -right-4 -top-4 w-24 h-24 opacity-20">
+        <svg viewBox="0 0 100 100" className="w-full h-full">
+          <path
+            d="M50 5 A45 45 0 1 1 50 95 A35 35 0 1 0 50 5"
+            fill="white"
+          />
+        </svg>
+      </div>
+    </motion.div>
+  );
+}
